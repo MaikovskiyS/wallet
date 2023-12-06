@@ -1,7 +1,10 @@
 package app
 
 import (
-	"context"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
 	"wallet/internal/config"
 	"wallet/internal/server"
 	"wallet/internal/server/router"
@@ -13,11 +16,8 @@ import (
 // init app deps and running http server
 func Run(cfg *config.Config) error {
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
 	//init database client
-	db, err := sqlx.ConnectContext(ctx, cfg.Psql.Driver(), cfg.Psql.ConnString())
+	db, err := sqlx.Connect(cfg.Psql.Driver(), cfg.Psql.ConnString())
 	if err != nil {
 		return err
 	}
@@ -29,9 +29,31 @@ func Run(cfg *config.Config) error {
 	wallet.NewService(r, db)
 	s := server.New(cfg)
 	s.SetHandler(r)
-	err = s.ListenAndServe()
+
+	// starting http server
+	go func() {
+		err = s.ListenAndServe()
+		if err != nil {
+			if err == http.ErrServerClosed {
+				log.Println("HTTP server stopped")
+			}
+			return
+		}
+
+	}()
+
+	sigint := make(chan os.Signal, 1)
+	signal.Notify(sigint, os.Interrupt)
+
+	<-sigint
+	err = db.Close()
 	if err != nil {
 		return err
 	}
+	err = s.Shutdown()
+	if err != nil {
+		return err
+	}
+	log.Println("app closed")
 	return nil
 }

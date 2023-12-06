@@ -26,6 +26,6 @@ func (s *server) SetHandler(h http.Handler) {
 func (s *server) ListenAndServe() error {
 	return s.s.ListenAndServe()
 }
-func (s *server) Shutdown(ctx context.Context) error {
-	return s.s.Shutdown(ctx)
+func (s *server) Shutdown() error {
+	return s.s.Shutdown(context.Background())
 }
