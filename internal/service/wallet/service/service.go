@@ -6,21 +6,21 @@ import (
 	"wallet/internal/service/wallet/ports/repository"
 )
 
-type service struct {
+type Service struct {
 	conv  Converter
 	store Repository
 }
 
 // New wallet service
-func New(r Repository, c Converter) *service {
-	return &service{
+func New(r Repository, c Converter) *Service {
+	return &Service{
 		store: r,
 		conv:  c,
 	}
 }
 
 // Save saves wallet into database; Returning Id
-func (s *service) Create(ctx context.Context, w domain.Wallet) (uint64, error) {
+func (s *Service) Create(ctx context.Context, w domain.Wallet) (uint64, error) {
 	return s.store.Save(ctx, w)
 }
 
@@ -42,7 +42,7 @@ func (s *service) Create(ctx context.Context, w domain.Wallet) (uint64, error) {
 
  */
 // UpdateBalance converting amount to decimal18 and modify wallet balance
-func (s *service) UpdateBalance(ctx context.Context, t domain.Transaction) error {
+func (s *Service) UpdateBalance(ctx context.Context, t domain.Transaction) error {
 
 	evmAmount, err := s.conv.EvmDecimal(t.Amount)
 	if err != nil {
@@ -67,7 +67,7 @@ func (s *service) UpdateBalance(ctx context.Context, t domain.Transaction) error
 }
 
 // TransferAmount ...
-func (s *service) TransferAmount(ctx context.Context, t domain.Transfer) error {
+func (s *Service) TransferAmount(ctx context.Context, t domain.Transfer) error {
 
 	evmAmount, err := s.conv.EvmDecimal(t.Amount)
 	if err != nil {

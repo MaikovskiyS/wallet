@@ -10,14 +10,13 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type wallet struct {
-}
-
-func NewService(r *router.Router, dbCl *sqlx.DB) {
+func NewService(r *router.Router, dbCl *sqlx.DB) *service.Service {
 	repo := repository.New(dbCl)
 	c := converter.New()
 	svc := service.New(repo, c)
 	api := api.New(svc)
 
 	api.RegisterRoutes(r)
+
+	return svc
 }

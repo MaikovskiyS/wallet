@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"log"
+	"time"
 	"wallet/internal/config"
 
 	"github.com/golang-migrate/migrate/v4"
@@ -12,10 +13,9 @@ import (
 
 // Run migrations
 func RunMigrations(cfg config.Postgres) error {
-	log.Printf("cfg.MigrationPath: %v\n", cfg.MigrationPath)
-	fmt.Printf("cfg.ConnString(): %v\n", cfg.ConnString())
 	dr, err := migrate.New(cfg.MigrationPath, cfg.ConnString())
 	if err != nil {
+		time.Sleep(1 * time.Second)
 		fmt.Println(err.Error())
 		return fmt.Errorf("migrate Err: %w", err)
 	}

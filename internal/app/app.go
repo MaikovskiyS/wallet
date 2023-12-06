@@ -28,6 +28,8 @@ func Run(cfg *config.Config) error {
 
 	// init wallet service
 	wallet.NewService(r, db)
+
+	//init http server
 	s := server.New(cfg)
 	s.SetHandler(r)
 

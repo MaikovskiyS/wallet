@@ -16,19 +16,19 @@ var (
 
 type middleware struct {
 }
+
 type AppHandler func(w http.ResponseWriter, r *http.Request) error
 
 func New() *middleware {
 	return &middleware{}
 }
 
-// Log request letency and answer from server
+// Log request method, URI, letency
 func (m *middleware) Logging(h AppHandler) AppHandler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		t := time.Now()
+		log.Printf("REQUEST Method: %s Handler: %s", r.Method, r.RequestURI)
 		err := h(w, r)
-
-		log.Println(time.Since(t))
 
 		if err != nil {
 			var er *apperrors.AppErr
@@ -39,12 +39,12 @@ func (m *middleware) Logging(h AppHandler) AppHandler {
 			log.Printf("unknown error: %s", err)
 			return err
 		}
-		log.Println("success")
+		log.Printf(" 'OK' Latancy: %s", time.Since(t).String())
 		return nil
 	}
 }
 
-// Handle Error and sending answer to client
+// Handle Error from app
 func (m *middleware) ErrorHandle(h AppHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := h(w, r)

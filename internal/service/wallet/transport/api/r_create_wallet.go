@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 	"wallet/internal/domain"
 )
@@ -18,7 +17,6 @@ type SaveWalletResponce struct {
 }
 
 func (a *api) CreateWallet(w http.ResponseWriter, r *http.Request) error {
-	log.Println("in create handler")
 	if r.Method != http.MethodPost {
 		ErrBadRequest.AddLocation("Save-ParseMethod")
 		ErrBadRequest.SetErr(errors.New("wrong method"))
