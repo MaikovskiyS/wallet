@@ -1,3 +1,5 @@
+CREATE SCHEMA IF NOT EXISTS postgres;
+
 CREATE TABLE IF NOT EXISTS wallets(
    id serial PRIMARY KEY,
    name VARCHAR (50) NOT NULL,

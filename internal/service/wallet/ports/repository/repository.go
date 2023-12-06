@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 	"wallet/internal/apperrors"
 	"wallet/internal/domain"
 
@@ -130,21 +131,10 @@ type TransferParams struct {
 	Amount float64
 }
 
-/*
-Ожидаемый результат: должны измениться балансы указанных
-кошельков – у одного уменьшиться, у второго увеличиться. Помимо
-этого, должны создаться транзакции изменения баланса как указано
-в пункте 2.
-Важно: изменение балансов в базе данных должно происходить в
-рамках одной транзакции в базе данных. Нужно исключить ситуации,
-когда у одного кошелька баланс уменьшается, а у второго из-за
-какой-либо ошибки не увеличивается. Для обеспечения
-безопасности, необходимо использовать database locking.
-
-*/
 // Transfer amount by ids between wallets
 func (r *repo) Transfer(ctx context.Context, p TransferParams) error {
 	fmt.Printf("p: %v\n", p)
+	tik := time.Now()
 	tx, err := r.cl.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
 	if err != nil {
 		ErrInternal.AddLocation("Update-BeginTx")
@@ -170,6 +160,7 @@ func (r *repo) Transfer(ctx context.Context, p TransferParams) error {
 	// }
 
 	var balanceW1 int64
+
 	err = tx.QueryRowContext(ctx, query, p.From, -p.Amount).Scan(&balanceW1)
 	if err != nil {
 		ErrInternal.AddLocation("Transfer-W1QueryRowContext")
@@ -200,5 +191,6 @@ func (r *repo) Transfer(ctx context.Context, p TransferParams) error {
 		ErrInternal.SetErr(err)
 		return ErrInternal
 	}
+	fmt.Printf("time.Since(tik): %v\n", time.Since(tik))
 	return nil
 }

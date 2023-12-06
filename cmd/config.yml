@@ -1,16 +1,16 @@
 
 server:
   port: !!str 8080
-  host: localhost
   readtimeout: 5
   writetimeout: 5
   idletimeout: 5
 postgres:
   dbdriver: postgres 
-  host: localhost
+  host: postgresdb
   port: 5432
   username: postgres
-  password: Wild54323
+  password: admin
   schema: postgres
   sslmode: disable
-  migrationpath: "file://C:/Develop/testtasks/wallet/internal/migrations"
+  migrationpath: "file://internal/migrations"
+

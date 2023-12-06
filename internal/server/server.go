@@ -13,7 +13,7 @@ type server struct {
 func New(cfg *config.Config) *server {
 
 	s := &http.Server{
-		Addr:         cfg.HttpServer.HostPort(),
+		Addr:         ":" + cfg.HttpServer.Port,
 		ReadTimeout:  cfg.HttpServer.ReadTimeout(),
 		WriteTimeout: cfg.HttpServer.WriteTimeout(),
 		Handler:      nil,

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -19,7 +20,7 @@ func Run(cfg *config.Config) error {
 	//init database client
 	db, err := sqlx.Connect(cfg.Psql.Driver(), cfg.Psql.ConnString())
 	if err != nil {
-		return err
+		return fmt.Errorf("postgres connection Err: %w", err)
 	}
 
 	//init http(default mux) router
@@ -32,6 +33,7 @@ func Run(cfg *config.Config) error {
 
 	// starting http server
 	go func() {
+		log.Printf("Starting server on %s", cfg.HttpServer.Port)
 		err = s.ListenAndServe()
 		if err != nil {
 			if err == http.ErrServerClosed {
