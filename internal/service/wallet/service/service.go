@@ -24,23 +24,6 @@ func (s *Service) Create(ctx context.Context, w domain.Wallet) (uint64, error) {
 	return s.store.Save(ctx, w)
 }
 
-/*
-Ожидаемый результат: в зависимости от типа транзакции, должен
-измениться баланс указанного кошелька (либо увеличиться, либо
-уменьшиться соответственно). Транзакция должна быть записана в
-соответствующую таблицу. Помимо входных данных, запись в
-таблице должна содержать поле updated_balance с балансом
-кошелька после выполнения транзакции.
-
-1. определить тип транзакции
-2. создать параметры запроса к бд update balance params; amount зависит от типа транзакции
-
-3. создаем новую транзакцию
-*/
-
-/*
-
- */
 // UpdateBalance converting amount to decimal18 and modify wallet balance
 func (s *Service) UpdateBalance(ctx context.Context, t domain.Transaction) error {
 
