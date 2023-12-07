@@ -4,8 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
-	"time"
 	"wallet/internal/apperrors"
 	"wallet/internal/domain"
 
@@ -66,11 +64,6 @@ func (r *repo) GetById(ctx context.Context, id uint64) (domain.Wallet, error) {
 
 }
 
-// получаем баланс
-// проверяем что баланс больше если идет снятие
-// снимаем
-// апдейтим баланс
-
 type UpdateParams struct {
 	TransactionType uint8
 	WalletId        uint64
@@ -129,68 +122,4 @@ type TransferParams struct {
 	From   uint64
 	To     uint64
 	Amount float64
-}
-
-// Transfer amount by ids between wallets
-func (r *repo) Transfer(ctx context.Context, p TransferParams) error {
-	fmt.Printf("p: %v\n", p)
-	tik := time.Now()
-	tx, err := r.cl.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
-	if err != nil {
-		ErrInternal.AddLocation("Update-BeginTx")
-		ErrInternal.SetErr(err)
-		return ErrInternal
-	}
-
-	defer func() error {
-		if err := tx.Rollback(); err != nil {
-			ErrInternal.AddLocation("Update-Rollback")
-			ErrInternal.SetErr(err)
-			return ErrInternal
-
-		}
-		return errors.New("tx rollback")
-	}()
-	query := "UPDATE wallets SET balance=balance+$1 WHERE id=$2 RETURNING balance"
-	// stmt, err := tx.PrepareContext(ctx, query)
-	// if err != nil {
-	// 	ErrInternal.AddLocation("Transfer-PrepareContext")
-	// 	ErrInternal.SetErr(err)
-	// 	return ErrInternal
-	// }
-
-	var balanceW1 int64
-
-	err = tx.QueryRowContext(ctx, query, p.From, -p.Amount).Scan(&balanceW1)
-	if err != nil {
-		ErrInternal.AddLocation("Transfer-W1QueryRowContext")
-		ErrInternal.SetErr(err)
-		return ErrInternal
-	}
-
-	var balanceW2 int64
-	err = tx.QueryRowContext(ctx, query, p.To, p.Amount).Scan(&balanceW2)
-	if err != nil {
-		ErrInternal.AddLocation("Transfer-W2QueryRowContext")
-		ErrInternal.SetErr(err)
-		return ErrInternal
-	}
-
-	query = "INSERT INTO transactions (transaction_type, wallet_id, amount, updated_balance)VALUES($1,$2,$3,$4),($5,$6,$7,$8)"
-	balanceDecreased := 0
-	balanceIncreased := 1
-	_, err = tx.ExecContext(ctx, query, balanceDecreased, balanceIncreased, p.Amount, balanceDecreased)
-	if err != nil {
-		ErrInternal.AddLocation("Update-ExecContext")
-		ErrInternal.SetErr(err)
-		return ErrInternal
-	}
-	err = tx.Commit()
-	if err != nil {
-		ErrInternal.AddLocation("Transfer-BeginTx")
-		ErrInternal.SetErr(err)
-		return ErrInternal
-	}
-	fmt.Printf("time.Since(tik): %v\n", time.Since(tik))
-	return nil
 }
