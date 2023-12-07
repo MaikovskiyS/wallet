@@ -16,6 +16,7 @@ type SaveWalletResponce struct {
 	Id  uint64 `json:"id"`
 }
 
+// CreateWallet  handle input Json, parse data to domain entity, call service layer method, send responce to client
 func (a *api) CreateWallet(w http.ResponseWriter, r *http.Request) error {
 	if r.Method != http.MethodPost {
 		ErrBadRequest.AddLocation("Save-ParseMethod")
@@ -62,6 +63,7 @@ func (r *SaveWalletRequest) toModel() (domain.Wallet, error) {
 	return wallet, nil
 }
 
+// toModel validate input data and mapping to domain entity
 func (resp *SaveWalletResponce) Send(w http.ResponseWriter) error {
 	idBytes, err := json.Marshal(&resp)
 	if err != nil {

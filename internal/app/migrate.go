@@ -22,15 +22,8 @@ func RunMigrations(cfg config.Postgres) error {
 	defer dr.Close()
 
 	if err := dr.Up(); err != nil && err != migrate.ErrNoChange {
-		log.Println(err.Error())
-		fmt.Println(err)
-		// err = dr.Drop()
-		// if err != nil {
-		// 	return err
-		// }
 		return err
 	}
-	//dr.Drop()
 	log.Println("migrations done")
 	return nil
 }

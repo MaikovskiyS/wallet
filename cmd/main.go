@@ -6,6 +6,7 @@ import (
 	"wallet/internal/config"
 )
 
+// init config and migrations, running app
 func main() {
 	cfg, err := config.New()
 	if err != nil {

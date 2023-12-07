@@ -13,6 +13,7 @@ type Config struct {
 	HttpServer HttpServer `yaml:"server"`
 }
 
+// Constructor parse yaml file and decode to struct
 func New() (*Config, error) {
 	f, err := os.Open("./cmd/config.yml")
 	if err != nil {

@@ -22,6 +22,7 @@ type UpdateBalanceResponce struct {
 	Msg string
 }
 
+// TransferAmount handle input Json, parse data to domain entity, call service layer method, send responce to client
 func (a *api) UpdateBalance(w http.ResponseWriter, r *http.Request) error {
 	if r.Method != http.MethodPatch {
 		ErrBadRequest.AddLocation("UpdateBalance-ParseMethod")
@@ -46,7 +47,6 @@ func (a *api) UpdateBalance(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	//TODO: add response
 	return nil
 }
 

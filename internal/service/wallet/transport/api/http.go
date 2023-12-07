@@ -12,16 +12,16 @@ var (
 	ErrBadRequest = apperrors.New(apperrors.ErrBadRequest, location)
 )
 
-type Usecase interface {
+type Wallet interface {
 	Create(ctx context.Context, w domain.Wallet) (uint64, error)
 	UpdateBalance(ctx context.Context, t domain.Transaction) error
 	TransferAmount(ctx context.Context, t domain.Transfer) error
 }
 type api struct {
-	u Usecase
+	u Wallet
 }
 
-func New(u Usecase) *api {
+func New(u Wallet) *api {
 	return &api{
 		u: u,
 	}

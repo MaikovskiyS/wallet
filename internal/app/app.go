@@ -22,7 +22,6 @@ func Run(cfg *config.Config) error {
 	if err != nil {
 		return fmt.Errorf("postgres connection Err: %w", err)
 	}
-
 	//init http(default mux) router
 	r := router.New()
 

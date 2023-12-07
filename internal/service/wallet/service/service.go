@@ -38,9 +38,9 @@ func (s *Service) UpdateBalance(ctx context.Context, t domain.Transaction) error
 	}
 	switch t.TransactionType {
 	case 1:
-		p.Amount = int64(evmAmount)
+		p.Amount = evmAmount
 	case 0:
-		p.Amount = int64(-evmAmount)
+		p.Amount = -evmAmount
 	}
 	err = s.store.Update(ctx, p)
 	if err != nil {
@@ -49,21 +49,23 @@ func (s *Service) UpdateBalance(ctx context.Context, t domain.Transaction) error
 	return nil
 }
 
-// TransferAmount ...
+// TransferAmount Transfer amount by ids between wallets
 func (s *Service) TransferAmount(ctx context.Context, t domain.Transfer) error {
-
 	evmAmount, err := s.conv.EvmDecimal(t.Amount)
 	if err != nil {
 		return err
 	}
-
-	err = s.store.Update(ctx, repository.UpdateParams{TransactionType: 0, WalletId: t.From, Amount: -int64(evmAmount)})
-	if err != nil {
-		return err
+	q := func() error {
+		err = s.store.Update(ctx, repository.UpdateParams{TransactionType: 0, WalletId: t.From, Amount: -evmAmount})
+		if err != nil {
+			return err
+		}
+		err = s.store.Update(ctx, repository.UpdateParams{TransactionType: 1, WalletId: t.To, Amount: evmAmount})
+		if err != nil {
+			return err
+		}
+		return nil
 	}
-	err = s.store.Update(ctx, repository.UpdateParams{TransactionType: 1, WalletId: t.To, Amount: int64(evmAmount)})
-	if err != nil {
-		return err
-	}
+	s.store.ExecTx(ctx, q)
 	return nil
 }

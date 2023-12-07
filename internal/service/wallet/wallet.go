@@ -10,8 +10,8 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func NewService(r *router.Router, dbCl *sqlx.DB) *service.Service {
-	repo := repository.New(dbCl)
+func NewService(r *router.Router, dbConn *sqlx.DB) *service.Service {
+	repo := repository.New(dbConn)
 	c := converter.New()
 	svc := service.New(repo, c)
 	api := api.New(svc)
