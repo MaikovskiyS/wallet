@@ -16,3 +16,5 @@ func (row *walletRow) toModel() domain.Wallet {
 	}
 	return w
 }
+
+

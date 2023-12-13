@@ -117,9 +117,14 @@ func (r *repo) Update(ctx context.Context, p UpdateParams) error {
 	}
 	return nil
 }
+func (r *repo) GetWithParams(ctx context.Context, p Parameter) ([]domain.Wallet, error) {
+	wallets := make([]domain.Wallet, 0)
 
-type TransferParams struct {
-	From   uint64
-	To     uint64
-	Amount float64
+	return wallets, nil
+}
+
+type Parameter interface {
+	From() int64
+	To() int64
+	Amount() int64
 }
