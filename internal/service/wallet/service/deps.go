@@ -16,8 +16,3 @@ type Repository interface {
 type Converter interface {
 	EvmDecimal(amount float64) (int64, error)
 }
-type Parameter interface {
-	From() int64
-	To() int64
-	Amount() int64
-}
